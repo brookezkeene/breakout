@@ -22,6 +22,7 @@ Cheat keys:
     Space - Pause or Resume Game
 
 Known Bugs:
+
     - successive block collisions that occur in a short span of time where blocks share a border sometimes look odd
     - ball behavior around the edges of the paddle sometimes causes ball to oscillate directions
     - paddle does not fully reach the wall every level
