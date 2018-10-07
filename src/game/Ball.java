@@ -3,23 +3,31 @@ package game;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * Ball
+ *
+ * class that creates a Ball object
+ *
+ * @author Brooke Keene
+ */
 public class Ball {
     private int origX;
     private int origY;
     private int ballDiam;
     private double ballXDir;
     private double ballYDir;
+    private int ballSpeed;
+
     private static final String BALL_IMAGE = "ball.gif";
     private ImageView ball;
-    private int ballSpeed;
 
     /**
      * Constructor
      *
-     * @param x - x-coordinate of ball position
-     * @param y - y-coordinate of ball position
-     * @param diameter - ball diameter
-     * @param speed - ball speed
+     * @param x         x-coordinate of ball position
+     * @param y         y-coordinate of ball position
+     * @param diameter  ball diameter
+     * @param speed     ball speed
      */
     public Ball(int x, int y, int diameter, int speed) {
         origX = x - diameter/2;
@@ -31,61 +39,100 @@ public class Ball {
 
         Image image = new Image(getClass().getClassLoader().getResourceAsStream(BALL_IMAGE));
         ball = new ImageView(image);
+
         ball.setX(origX);
         ball.setY(origY);
     }
 
-    // Returns ImageView Ball Object
+    /**
+     * returns the current ImageView object of the Ball
+     *
+     * @return  ImageView of Ball
+     */
     public ImageView getBallImage() {
         return ball;
     }
 
-    // Returns X Position of Ball
+    /**
+     * returns the x position of the upper left corner of the Ball
+     *
+     * @return  Ball x-coordinate
+     */
     public double getXPos() {
         return ball.getX();
     }
 
-    // Returns Y Position of Ball
+    /**
+     * returns the y position of the upper left corner of the Ball
+     *
+     * @return  Ball y-coordinate
+     */
     public double getYPos() {
         return ball.getY();
     }
 
-    // Returns X Direction of Ball's Motion
+    /**
+     * returns the x direction of the Ball's current motion
+     *
+     * @return  Ball's x direction
+     */
     public double getXDir() {
         return ballXDir;
     }
 
-    // Returns Y Direction of Ball's Motion
+    /**
+     * returns the y direction of the Ball's current motion
+     *
+     * @return  Ball's y direction
+     */
     public double getYDir() {
         return ballYDir;
     }
 
-    // Changes X Direction of Ball's Motion to a double newDir
-    public void setXDir(double newDir) {
-        ballXDir = newDir;
+    /**
+     * changes the x direction of the Ball's motion by flipping the sign
+     */
+    public void changeXDir() {
+        ballXDir = -ballXDir;
     }
 
-    // Changes Y Direction of Ball's Motion to a double newDir
-    public void setYDir(double newDir) {
-        ballYDir = newDir;
+    /**
+     * changes the y direction of the Ball's motion by flipping the sign
+     */
+    public void changeYDir() {
+        ballYDir = -ballYDir;
     }
 
-    // Returns Ball's Speed
+    /**
+     * returns the current speed of the Ball
+     *
+     * @return  Ball's speed
+     */
     public int getSpeed() {
         return ballSpeed;
     }
 
-    // Changes Ball's Speed to an int newSpeed
+    /**
+     * changes the speed of the Ball to the new speed specified
+     *
+     * @param newSpeed  Ball's new speed
+     */
     public void setSpeed(int newSpeed) {
         ballSpeed = newSpeed;
     }
 
-    // Returns Ball's Diameter
+    /**
+     * returns the diameter of the Ball image
+     *
+     * @return  Ball diameter
+     */
     public int getDiam() {
         return ballDiam;
     }
 
-    // Resets Ball's Position for New Game or Level
+    /**
+     * resets the position of the Ball for a new game or new level
+     */
     public void reset() {
         ball.setX(origX);
         ball.setY(origY);

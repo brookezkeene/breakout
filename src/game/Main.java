@@ -239,7 +239,7 @@ public class Main extends Application {
      */
     private void movePaddleRight() {
         if(myPaddle.getMaxX() + myPaddle.getSpeed() < WIDTH) {
-            myPaddle.setXPos(myPaddle.getXPos() + myPaddle.getSpeed());
+            myPaddle.increaseXPos();
         }
 
     }
@@ -249,7 +249,7 @@ public class Main extends Application {
      */
     private void movePaddleLeft() {
         if(myPaddle.getMaxX() - myPaddle.getWidth() > 0) {
-            myPaddle.setXPos(myPaddle.getXPos() - myPaddle.getSpeed());
+            myPaddle.decreaseXPos();
         }
     }
 
@@ -454,13 +454,10 @@ public class Main extends Application {
      * @param myBlock
      */
     private void decrementBlock(Block myBlock) {
-        // decrement block lives
-        int lives = myBlock.getLives();
-        lives--;
+        myBlock.decrementLives();
         // check if block is still alive
-        if(lives == 1) {
+        if(myBlock.getLives() == 1) {
             removeBlock(myBlock);
-            myBlock.setLives(lives);
             myBlocks.add(myBlock.getBlockImage());
         }
         else {

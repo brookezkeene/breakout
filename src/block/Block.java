@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
+ * Block
+ *
  * abstract class for Block objects
  * where all methods are defined
  *
