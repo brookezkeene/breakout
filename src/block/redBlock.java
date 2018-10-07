@@ -3,6 +3,11 @@ package block;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * sub-class of Block, a red Block
+ *
+ * @author Brooke Keene
+ */
 public class redBlock extends Block {
     private static final String red = "brick6.gif";
     private static final String redBroken = "brick6broken.gif";
@@ -10,7 +15,6 @@ public class redBlock extends Block {
     public redBlock(int num, int x, int y, int row) {
         super(num, x, y, row);
 
-        blockArray = new Image[3];
         Image brokenImage = new Image(getClass().getClassLoader().getResourceAsStream(redBroken));
         Image image = new Image(getClass().getClassLoader().getResourceAsStream(red));
 

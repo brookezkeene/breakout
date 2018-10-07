@@ -3,14 +3,26 @@ package block;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * sub-class of Block, a blue Block
+ *
+ * @author Brooke Keene
+ */
 public class blueBlock extends Block {
     private static final String blue = "brick2.gif";
     private static final String blueBroken = "brick2broken.gif";
 
+    /**
+     * Constructor
+     *
+     * @param num   number of lives block has
+     * @param x     x-coordinate of block position
+     * @param y     y-coordinate of block position
+     * @param row   block row in game map
+     */
     public blueBlock(int num, int x, int y, int row) {
         super(num, x, y, row);
 
-        blockArray = new Image[3];
         Image brokenImage = new Image(getClass().getClassLoader().getResourceAsStream(blueBroken));
         Image image = new Image(getClass().getClassLoader().getResourceAsStream(blue));
 

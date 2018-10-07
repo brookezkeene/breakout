@@ -3,6 +3,12 @@ package block;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * abstract class for Block objects
+ * where all methods are defined
+ *
+ * @author Brooke Keene
+ */
 public abstract class Block {
     protected int lives;
     protected int blockRow;
@@ -16,65 +22,103 @@ public abstract class Block {
     /**
      * Constructor
      *
-     * @param num - number of lives block has
-     * @param x - x-coordinate of block position
-     * @param y - y-coordinate of block position
-     * @param row - block row in game map
+     * @param num   number of lives block has
+     * @param x     x-coordinate of block position
+     * @param y     y-coordinate of block position
+     * @param row   block row in game map
      */
     public Block(int num, int x, int y, int row) {
         lives = num;
         blockRow = row;
+        blockArray = new Image[3];
     }
 
-    // Returns ImageView Block Object
+    /**
+     * returns the current ImageView object of the Block
+     *
+     * @return  ImageView of Block
+     */
     public ImageView getBlockImage() {
         return block;
     }
 
-    // Returns Block's Row in Game Map
+    /**
+     * returns row of the Block in the game map
+     *
+     * @return  Block's row
+     */
     public int getRow() {
         return blockRow;
     }
 
-    // Returns Block's Minimum X Position
+    /**
+     * returns the minimum x position of the Block
+     *
+     * @return  Block's minimum x-coordinate
+     */
     public double getMinX() {
         return block.getBoundsInParent().getMinX();
     }
 
-    // Returns Block's Minimum Y Position
+    /**
+     * returns the minimum y position of the Block
+     *
+     * @return  Block's minimum y-coordinate
+     */
     public double getMinY() {
         return block.getBoundsInParent().getMinY();
     }
 
-    // Returns Block's Maximum X Position
+    /**
+     * returns the maximum x position of the Block
+     *
+     * @return  Block's maximum x-coordinate
+     */
     public double getMaxX() {
         return block.getBoundsInParent().getMaxX();
     }
 
-    // Returns Block's Maximum Y Position
+    /**
+     * returns the maximum y position of the Block
+     *
+     * @return  Block's maximum y-coordinate
+     */
     public double getMaxY() {
         return block.getBoundsInParent().getMaxY();
     }
 
-    // Returns Block's Width
+    /**
+     * returns width of the Block image
+     *
+     * @return  Block width
+     */
     public double getWidth() {
         return blockWidth;
     }
 
-    // Returns Block's Height
+    /**
+     * returns height of the Block image
+     *
+     * @return  Block height
+     */
     public double getHeight() {
         return blockHeight;
     }
 
-    // Returns Block's Lives
+    /**
+     * returns number of Block lives
+     *
+     * @return  Block lives
+     */
     public int getLives() {
         return lives;
     }
 
-    // Changes Block's Lives and Updates Block Image
-    public void setLives(int newStatus) {
-        lives = newStatus;
-        // change block image based on block's new lives count
+    /**
+     * decreases Block lives by one and updates Block image
+     */
+    public void decrementLives() {
+        lives--;
         block.setImage(blockArray[lives]);
     }
 }
