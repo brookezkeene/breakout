@@ -1,5 +1,6 @@
 package game;
 
+import block.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -15,6 +16,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import power.Power;
+
 import java.util.ArrayList;
 
 /**
@@ -148,7 +151,7 @@ public class Main extends Application {
      * @param col - determines the number of columns of blocks
      */
     private void MapGenerator(int row, int col) {
-        Block sizeBlock = new Block(1, 1, 1, 0);
+        Block sizeBlock = new redBlock(1, 1, 1, 0);
         int width = (int) sizeBlock.getWidth();
         int height = (int) sizeBlock.getHeight();
         int buffer = statusBuf;
@@ -156,22 +159,45 @@ public class Main extends Application {
         for(int i = 0; i < row; i++) {
             for( int j = 0; j < col; j++) {
                 int lives = myLevel > 1 ? 2:1;
-                // add power up or down if above level 1
-                int power;
-                if(myLevel >= 2) {
-                    power = addPower();
-                    if(power <= 7) {
-                        Power tempPow = new Power(1, j * width, i * height + buffer, i, power);
-                        root.getChildren().add(tempPow.getBlockImage());
-                        myPowers.add(tempPow);
-                        powerNum++;
-                    }
-                }
-                Block tempBlock = new Block(lives, j*width, i*height + buffer, i);
+//                // add power up or down if above level 1
+//                int power;
+//                if(myLevel >= 2) {
+//                    power = addPower();
+//                    if(power <= 7) {
+//                        Power tempPow = new Power(1, j * width, i * height + buffer, i, power);
+//                        root.getChildren().add(tempPow.getPowerImage());
+//                        myPowers.add(tempPow);
+//                        powerNum++;
+//                    }
+//                }
+                Block tempBlock = blockChooser(lives, j*width, i*height + buffer, i);
                 myMap.add(tempBlock);
                 myBlocks.add(tempBlock.getBlockImage());
             }
         }
+    }
+
+    private Block blockChooser(int lives, int width, int height, int row) {
+        Block newBlock;
+        if(row == 0) {
+            newBlock = new redBlock(lives, width, height, row);
+        }
+        else if(row == 1) {
+            newBlock = new orangeBlock(lives, width, height, row);
+        }
+        else if(row == 2) {
+            newBlock = new yellowBlock(lives, width, height, row);
+        }
+        else if(row == 3) {
+            newBlock = new greenBlock(lives, width, height, row);
+        }
+        else if(row == 4) {
+            newBlock = new blueBlock(lives, width, height, row);
+        }
+        else {
+            newBlock = new purpleBlock(lives, width, height, row);
+        }
+        return newBlock;
     }
 
     /**
@@ -204,7 +230,7 @@ public class Main extends Application {
 
             collidesWithBlock();
             collidesWithPaddle();
-            collidesWithPower();
+            //collidesWithPower();
         }
     }
 
@@ -244,11 +270,11 @@ public class Main extends Application {
      */
     private boolean collidesWithWall() {
         if (myBall.getXPos() < 0 || myBall.getXPos() > WIDTH - myBall.getDiam()) {
-            myBall.setXDir(-myBall.getXDir());
+            myBall.changeXDir();
             return true;
         }
         else if (myBall.getYPos() < 0) {
-            myBall.setYDir(-myBall.getYDir());
+            myBall.changeYDir();
             return true;
         }
         else {
@@ -271,17 +297,17 @@ public class Main extends Application {
             return;
         }
         else {
-            myBall.setYDir(-myBall.getYDir());
+            myBall.changeYDir();
 
             // check where ball hits paddle
             if (ballMidX <= paddleMaxX - half) {
                 if(myBall.getXDir() > 0) {
-                    myBall.setXDir(-myBall.getXDir());
+                    myBall.changeXDir();
                 }
             }
             else {
                 if(myBall.getXDir() < 0) {
-                    myBall.setXDir(-myBall.getXDir());
+                    myBall.changeXDir();
                 }
             }
         }
@@ -309,25 +335,25 @@ public class Main extends Application {
 
                 // check for hit on the upper edge
                 if (myBall.getYDir() > 0 && ballMaxY >= blockMinY && ballMinY <= blockMinY && ((ballMaxX >= blockMinX) && (ballMaxX <= blockMaxX) || (ballMinX >= blockMinX && ballMinX <= blockMaxX))) {
-                    myBall.setYDir(-myBall.getYDir());
+                    myBall.changeYDir();
                     decrementBlock(myBlock);
                     break;
                 }
                 // check for hit on the lower edge
                 if (myBall.getYDir() < 0 && ballMinY <= blockMaxY && ballMaxY >= blockMaxY && ((ballMaxX >= blockMinX) && (ballMaxX <= blockMaxX) || (ballMinX >= blockMinX && ballMinX <= blockMaxX))) {
-                    myBall.setYDir(-myBall.getYDir());
+                    myBall.changeYDir();
                     decrementBlock(myBlock);
                     break;
                 }
                 // check for hit on the left edge
                 if (myBall.getXDir() > 0 && ballMaxX >= blockMinX && ballMinX <= blockMinX && ((ballMaxY >= blockMinY && ballMaxY <= blockMaxY) || (ballMinY >= blockMinY && ballMinY <= blockMaxY))) {
-                    myBall.setXDir(-myBall.getXDir());
+                    myBall.changeXDir();
                     decrementBlock(myBlock);
                     break;
                 }
                 // check for hit on the right edge
                 if (myBall.getXDir() < 0 && ballMinX <= blockMaxX && ballMaxX >= blockMaxX && ((ballMaxY >= blockMinY && ballMaxY <= blockMaxY) || (ballMinY >= blockMinY && ballMinY <= blockMaxY))) {
-                    myBall.setXDir(-myBall.getXDir());
+                    myBall.changeXDir();
                     decrementBlock(myBlock);
                     break;
                 }
@@ -336,91 +362,91 @@ public class Main extends Application {
     }
 
     /**
-     * Check whether the ball collides with a power
-     *
-     * If so implement appropriate action
-     */
-    private void collidesWithPower() {
-        for (int i = 0; i < myPowers.size(); i++) {
-            Power myPow = myPowers.get(i);
-            if(!myPow.isHit()) {
-                double ballMinX = myBall.getXPos();
-                double ballMaxX = myBall.getXPos() + myBall.getDiam();
-                double ballMinY = myBall.getYPos();
-                double ballMaxY = myBall.getYPos() + myBall.getDiam();
+//     * Check whether the ball collides with a power
+//     *
+//     * If so implement appropriate action
+//     */
+//    private void collidesWithPower() {
+//        for (int i = 0; i < myPowers.size(); i++) {
+//            Power myPow = myPowers.get(i);
+//            if(!myPow.isHit()) {
+//                double ballMinX = myBall.getXPos();
+//                double ballMaxX = myBall.getXPos() + myBall.getDiam();
+//                double ballMinY = myBall.getYPos();
+//                double ballMaxY = myBall.getYPos() + myBall.getDiam();
+//
+//                double powMinX = myPow.getMinX();
+//                double powMaxX = myPow.getMaxX();
+//                double powMinY = myPow.getMinY();
+//                double powMaxY = myPow.getMaxY();
+//
+//                // check for hit on the upper edge
+//                if (ballMaxY >= powMinY && ballMinY <= powMinY && ((ballMaxX >= powMinX) && (ballMaxX <= powMaxX) || (ballMinX >= powMinX && ballMinX <= powMaxX))) {
+//                    myPow.setHitTrue();
+//                    implementPower(myPow);
+//                    break;
+//                }
+//                // check for hit on the lower edge
+//                if (ballMinY <= powMaxY && ballMaxY >= powMaxY && ((ballMaxX >= powMinX) && (ballMaxX <= powMaxX) || (ballMinX >= powMinX && ballMinX <= powMaxX))) {
+//                    myPow.setHitTrue();
+//                    implementPower(myPow);
+//                    break;
+//                }
+//                // check for hit on the left edge
+//                if (ballMaxX >= powMinX && ballMinX <= powMinX && ((ballMaxY >= powMinY && ballMaxY <= powMaxY) || (ballMinY >= powMinY && ballMinY <= powMaxY))) {
+//                    myPow.setHitTrue();
+//                    implementPower(myPow);
+//                    break;
+//                }
+//                // check for hit on the right edge
+//                if (ballMinX <= powMaxX && ballMaxX >= powMaxX && ((ballMaxY >= powMinY && ballMaxY <= powMaxY) || (ballMinY >= powMinY && ballMinY <= powMaxY))) {
+//                    myPow.setHitTrue();
+//                    implementPower(myPow);
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
-                double powMinX = myPow.getMinX();
-                double powMaxX = myPow.getMaxX();
-                double powMinY = myPow.getMinY();
-                double powMaxY = myPow.getMaxY();
-
-                // check for hit on the upper edge
-                if (ballMaxY >= powMinY && ballMinY <= powMinY && ((ballMaxX >= powMinX) && (ballMaxX <= powMaxX) || (ballMinX >= powMinX && ballMinX <= powMaxX))) {
-                    myPow.setHitTrue();
-                    implementPower(myPow);
-                    break;
-                }
-                // check for hit on the lower edge
-                if (ballMinY <= powMaxY && ballMaxY >= powMaxY && ((ballMaxX >= powMinX) && (ballMaxX <= powMaxX) || (ballMinX >= powMinX && ballMinX <= powMaxX))) {
-                    myPow.setHitTrue();
-                    implementPower(myPow);
-                    break;
-                }
-                // check for hit on the left edge
-                if (ballMaxX >= powMinX && ballMinX <= powMinX && ((ballMaxY >= powMinY && ballMaxY <= powMaxY) || (ballMinY >= powMinY && ballMinY <= powMaxY))) {
-                    myPow.setHitTrue();
-                    implementPower(myPow);
-                    break;
-                }
-                // check for hit on the right edge
-                if (ballMinX <= powMaxX && ballMaxX >= powMaxX && ((ballMaxY >= powMinY && ballMaxY <= powMaxY) || (ballMinY >= powMinY && ballMinY <= powMaxY))) {
-                    myPow.setHitTrue();
-                    implementPower(myPow);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * Implement power caught
-     *
-     * @param myPower
-     */
-    private void implementPower(Power myPower) {
-        int type = myPower.getType();
-        // add 50 points
-        if(type == 1) {
-            myScore += 50;
-            updateStatus();
-        }
-        // extra life
-        else if(type == 2) {
-            myLives++;
-            updateStatus();
-        }
-        // big paddle
-        else if(type == 3) {
-            System.out.print("hi");
-        }
-        // small paddle
-        else if(type == 4) {
-            System.out.print("hi");
-        }
-        // slow ball
-        else if(type == 5) {
-            myBall.setSpeed(myBall.getSpeed()-20);
-        }
-        // fast ball
-        else if(type == 6) {
-            myBall.setSpeed(myBall.getSpeed()+50);
-        }
-        // freeze paddle
-        else {
-          paddleFrozen = true;
-        }
-        removePower(myPower);
-    }
+//    /**
+//     * Implement power caught
+//     *
+//     * @param myPower
+//     */
+//    private void implementPower(Power myPower) {
+//        int type = myPower.getType();
+//        // add 50 points
+//        if(type == 1) {
+//            myScore += 50;
+//            updateStatus();
+//        }
+//        // extra life
+//        else if(type == 2) {
+//            myLives++;
+//            updateStatus();
+//        }
+//        // big paddle
+//        else if(type == 3) {
+//            System.out.print("hi");
+//        }
+//        // small paddle
+//        else if(type == 4) {
+//            System.out.print("hi");
+//        }
+//        // slow ball
+//        else if(type == 5) {
+//            myBall.setSpeed(myBall.getSpeed()-20);
+//        }
+//        // fast ball
+//        else if(type == 6) {
+//            myBall.setSpeed(myBall.getSpeed()+50);
+//        }
+//        // freeze paddle
+//        else {
+//          paddleFrozen = true;
+//        }
+//        removePower(myPower);
+//    }
 
     /**
      * Decrease block lives and check whether the block is still alive
@@ -453,15 +479,15 @@ public class Main extends Application {
         myBlocks.remove(myBlock.getBlockImage());
     }
 
-    /**
-     * Remove power from screen
-     *
-     * @param myPower
-     */
-    private void removePower(Power myPower) {
-        myPower.getBlockImage().setImage(null);
-        root.getChildren().remove(myPower.getBlockImage());
-    }
+//    /**
+//     * Remove power from screen
+//     *
+//     * @param myPower
+//     */
+//    private void removePower(Power myPower) {
+//        myPower.getBlockImage().setImage(null);
+//        root.getChildren().remove(myPower.getBlockImage());
+//    }
 
     /**
      * Decrease player lives
@@ -632,11 +658,11 @@ public class Main extends Application {
                     removeBlock(myBlock);
                 }
             }
-
-            // get rid of old powers
-            for (int i = 0; i < myPowers.size(); i++) {
-                removePower(myPowers.get(i));
-            }
+//
+//            // get rid of old powers
+//            for (int i = 0; i < myPowers.size(); i++) {
+//                removePower(myPowers.get(i));
+//            }
 
             levelUp(root);
         }

@@ -5,4 +5,6 @@ module game.bzk2 {
     requires javafx.media;
 
     exports game;
+    exports block;
+    exports power;
 }
