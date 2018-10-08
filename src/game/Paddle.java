@@ -24,15 +24,15 @@ public class Paddle {
      * @param height    height of play window
      */
     public Paddle(double x, int height) {
-        origX = (int) (x - paddle.getBoundsInLocal().getWidth()/2);
-        origY = height - (int) paddle.getBoundsInLocal().getHeight();
-
         Image image = new Image(getClass().getClassLoader().getResourceAsStream(PADDLE_IMAGE));
         paddle = new ImageView(image);
         paddle.setX(origX);
         paddle.setY(origY);
 
         paddleSpeed = 20;
+
+        origX = (int) (x - paddle.getBoundsInLocal().getWidth()/2);
+        origY = height - (int) paddle.getBoundsInLocal().getHeight();
     }
 
     /**

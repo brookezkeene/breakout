@@ -16,7 +16,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import power.Power;
+import power.*;
 
 import java.util.ArrayList;
 
@@ -159,17 +159,15 @@ public class Main extends Application {
         for(int i = 0; i < row; i++) {
             for( int j = 0; j < col; j++) {
                 int lives = myLevel > 1 ? 2:1;
-//                // add power up or down if above level 1
-//                int power;
-//                if(myLevel >= 2) {
-//                    power = addPower();
-//                    if(power <= 7) {
-//                        Power tempPow = new Power(1, j * width, i * height + buffer, i, power);
-//                        root.getChildren().add(tempPow.getPowerImage());
-//                        myPowers.add(tempPow);
-//                        powerNum++;
-//                    }
-//                }
+                // add power up or down if above level 1
+                if(myLevel >= 2) {
+                    Power tempPow = choosePower(j*width, i*height);
+                    if(tempPow != null) {
+                        root.getChildren().add(tempPow.getPowerImage());
+                        myPowers.add(tempPow);
+                        powerNum++;
+                    }
+                }
                 Block tempBlock = blockChooser(lives, j*width, i*height + buffer, i);
                 myMap.add(tempBlock);
                 myBlocks.add(tempBlock.getBlockImage());
@@ -177,6 +175,15 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * creates a Block based on its row in the game map
+     *
+     * @param lives     number of lives the Block will have
+     * @param width     width of the Block
+     * @param height    height of the Block
+     * @param row       row in which the Block resides
+     * @return          Block object
+     */
     private Block blockChooser(int lives, int width, int height, int row) {
         Block newBlock;
         if(row == 0) {
@@ -201,14 +208,43 @@ public class Main extends Application {
     }
 
     /**
-     * Randomly generates an integer to specify the power
+     * randomly generates an integer to specify Power
+     * then creates a new instance for the Power
      *
-     * @return int that specifies Power
+     * @param x     x-coordinate of Power
+     * @param y     y-coordinate of Power
+     * @return      Power object
      */
-    private int addPower() {
+    private Power choosePower(int x, int y) {
         // Randomly generate type
         int type = (int) (Math.random()*((21-1)+1))+1;
-        return type;
+
+        Power newPower;
+        if(type == 1) {
+            newPower = new addPower(x, y);
+        }
+        else if(type == 2) {
+            newPower = new lifePower(x, y);
+        }
+        else if(type == 3) {
+            newPower = new growPower(x ,y);
+        }
+        else if(type == 4) {
+            newPower = new shrinkPower(x, y);
+        }
+        else if(type == 5) {
+            newPower = new slowPower(x, y);
+        }
+        else if(type == 6) {
+            newPower = new fastPower(x, y);
+        }
+        else if(type == 7) {
+            newPower = new freezePower(x, y);
+        }
+        else {
+            newPower = null;
+        }
+        return newPower;
     }
 
     /**
