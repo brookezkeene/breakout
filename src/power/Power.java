@@ -1,70 +1,106 @@
-package game;
+package power;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-// Using inheritance as was discussed in class because I realized I was using the two
-// classes, Block and Power, very similarly in my game
-public class Power extends Block {
-    private int powerType; // associates a stored int with a power
+/**
+ * Power
+ *
+ * abstract class for Power up/down objects
+ * where all methods are defined
+ *
+ * @author Brooke Keene
+ */
+public abstract class Power {
     private boolean hit;   // boolean that signals whether the power has been hit or not
+    protected double powerWidth;
+    protected double powerHeight;
+    protected ImageView power;
 
-    // Different images for different power ups or downs
-    private static final String ADD = "addpoints.gif";
-    private static final String LIFE = "extralife.gif";
-    private static final String GROW = "growpaddle.gif";
-    private static final String SHRINK = "shrinkpaddle.gif";
-    private static final String SLOW = "slowball.gif";
-    private static final String FAST = "fastball.gif";
-    private static final String FREEZE = "freezepaddle.gif";
 
-    public Power(int num, int x, int y, int row, int type) {
-        super(num, x, y, row);
-        String powerImage;
-        // determines the image associated with the power
-        if(type == 1) {
-            powerImage = ADD;
-        }
-        else if(type == 2) {
-            powerImage = LIFE;
-        }
-        else if(type == 3) {
-            powerImage = GROW;
-        }
-        else if(type == 4) {
-            powerImage = SHRINK;
-        }
-        else if(type == 5) {
-            powerImage = SLOW;
-        }
-        else if(type == 6) {
-            powerImage = FAST;
-        }
-        else {
-            powerImage = FREEZE;
-        }
-
-        Image image = new Image(getClass().getClassLoader().getResourceAsStream(powerImage));
-        block = new ImageView(image);
-
-        block.setX(x);
-        block.setY(y);
-
-        powerType = type;
+    /**
+     * Constructor
+     */
+    public Power(int x, int y) {
         hit = false;
     }
 
-    // Returns Power Type in the Form of an Integer
-    public int getType() {
-        return powerType;
+    /**
+     * returns the current ImageView object of the Power
+     *
+     * @return  ImageView of Power
+     */
+    public ImageView getPowerImage() {
+        return power;
     }
 
-    // Sets Power's Hit Parameter
+    /**
+     * returns the minimum x position of the Power
+     *
+     * @return  Power's minimum x-coordinate
+     */
+    public double getMinX() {
+        return power.getBoundsInParent().getMinX();
+    }
+
+    /**
+     * returns the minimum y position of the Power
+     *
+     * @return  Power's minimum y-coordinate
+     */
+    public double getMinY() {
+        return power.getBoundsInParent().getMinY();
+    }
+
+    /**
+     * returns the maximum x position of the Power
+     *
+     * @return  Power's maximum x-coordinate
+     */
+    public double getMaxX() {
+        return power.getBoundsInParent().getMaxX();
+    }
+
+    /**
+     * returns the maximum y position of the Power
+     *
+     * @return  Power's maximum y-coordinate
+     */
+    public double getMaxY() {
+        return power.getBoundsInParent().getMaxY();
+    }
+
+    /**
+     * returns width of the Power image
+     *
+     * @return  Power width
+     */
+    public double getWidth() {
+        return powerWidth;
+    }
+
+    /**
+     * returns height of the Power image
+     *
+     * @return  Power height
+     */
+    public double getHeight() {
+        return powerHeight;
+    }
+
+    /**
+     * sets Power's hit indicator to True
+     */
     public void setHitTrue() {
         hit = true;
     }
 
-    // Return Whether Power is Hit
+    /**
+     * returns a boolean indicating whether the Power
+     * has been hit or not
+     *
+     * @return if Power is hit
+     */
     public boolean isHit() {
         return hit;
     }
