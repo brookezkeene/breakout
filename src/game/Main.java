@@ -19,6 +19,7 @@ import javafx.util.Duration;
 import power.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Breakout Game
@@ -41,8 +42,7 @@ public class Main extends Application {
     private ImageView myBallIV;
     private Paddle myPaddle;
     private ImageView myPaddleIV;
-    private ArrayList<Block> myMap;
-    private ArrayList<ImageView> myBlocks;
+    private ArrayList<Block> myBlocks;
     private ArrayList<Power> myPowers;
     private Text splash = new Text();
     private Text status = new Text();
@@ -100,7 +100,6 @@ public class Main extends Application {
         myPaddleIV = myPaddle.getPaddleImage();
         myBallIV = myBall.getBallImage();
 
-        myMap = new ArrayList<>();
         myBlocks = new ArrayList<>();
         myPowers = new ArrayList<>();
         MapGenerator(numRow + myLevel,numCol);
@@ -134,7 +133,6 @@ public class Main extends Application {
         // add all shapes and text to collection root
         root.getChildren().add(myBallIV);
         root.getChildren().add(myPaddleIV);
-        root.getChildren().addAll(myBlocks);
         root.getChildren().add(splash);
         root.getChildren().add(border);
 
@@ -158,19 +156,19 @@ public class Main extends Application {
 
         for(int i = 0; i < row; i++) {
             for( int j = 0; j < col; j++) {
-                int lives = myLevel > 1 ? 2:1;
                 // add power up or down if above level 1
                 if(myLevel >= 2) {
-                    Power tempPow = choosePower(j*width, i*height);
+                    Power tempPow = choosePower(j*width, i*height + buffer);
                     if(tempPow != null) {
                         root.getChildren().add(tempPow.getPowerImage());
                         myPowers.add(tempPow);
                         powerNum++;
                     }
                 }
+                int lives = myLevel > 1 ? 2:1;
                 Block tempBlock = blockChooser(lives, j*width, i*height + buffer, i);
-                myMap.add(tempBlock);
-                myBlocks.add(tempBlock.getBlockImage());
+                root.getChildren().add(tempBlock.getBlockImage());
+                myBlocks.add(tempBlock);
             }
         }
     }
@@ -256,7 +254,7 @@ public class Main extends Application {
         if (play && myLives > 0) {
             if(myBlocks.isEmpty()) {
                 play = false;
-                levelUp(root);
+                levelUp();
             }
             collidesWithWall();
             moveBall(elapsedTime);
@@ -356,52 +354,50 @@ public class Main extends Application {
      * If so add to score and decrement the block lives
      */
     private void collidesWithBlock() {
-        for (int i = 0; i < myMap.size(); i++) {
-            Block myBlock = myMap.get(i);
-            if(myBlocks.contains(myBlock.getBlockImage())) {
-                double ballMinX = myBall.getXPos();
-                double ballMaxX = myBall.getXPos() + myBall.getDiam();
-                double ballMinY = myBall.getYPos();
-                double ballMaxY = myBall.getYPos() + myBall.getDiam();
+        for (int i = 0; i < myBlocks.size(); i++) {
+            Block myBlock = myBlocks.get(i);
+            double ballMinX = myBall.getXPos();
+            double ballMaxX = myBall.getXPos() + myBall.getDiam();
+            double ballMinY = myBall.getYPos();
+            double ballMaxY = myBall.getYPos() + myBall.getDiam();
 
-                double blockMinX = myBlock.getMinX();
-                double blockMaxX = myBlock.getMaxX();
-                double blockMinY = myBlock.getMinY();
-                double blockMaxY = myBlock.getMaxY();
+            double blockMinX = myBlock.getMinX();
+            double blockMaxX = myBlock.getMaxX();
+            double blockMinY = myBlock.getMinY();
+            double blockMaxY = myBlock.getMaxY();
 
-                // check for hit on the upper edge
-                if (myBall.getYDir() > 0 && ballMaxY >= blockMinY && ballMinY <= blockMinY && ((ballMaxX >= blockMinX) && (ballMaxX <= blockMaxX) || (ballMinX >= blockMinX && ballMinX <= blockMaxX))) {
-                    myBall.changeYDir();
-                    decrementBlock(myBlock);
-                    break;
-                }
-                // check for hit on the lower edge
-                if (myBall.getYDir() < 0 && ballMinY <= blockMaxY && ballMaxY >= blockMaxY && ((ballMaxX >= blockMinX) && (ballMaxX <= blockMaxX) || (ballMinX >= blockMinX && ballMinX <= blockMaxX))) {
-                    myBall.changeYDir();
-                    decrementBlock(myBlock);
-                    break;
-                }
-                // check for hit on the left edge
-                if (myBall.getXDir() > 0 && ballMaxX >= blockMinX && ballMinX <= blockMinX && ((ballMaxY >= blockMinY && ballMaxY <= blockMaxY) || (ballMinY >= blockMinY && ballMinY <= blockMaxY))) {
-                    myBall.changeXDir();
-                    decrementBlock(myBlock);
-                    break;
-                }
-                // check for hit on the right edge
-                if (myBall.getXDir() < 0 && ballMinX <= blockMaxX && ballMaxX >= blockMaxX && ((ballMaxY >= blockMinY && ballMaxY <= blockMaxY) || (ballMinY >= blockMinY && ballMinY <= blockMaxY))) {
-                    myBall.changeXDir();
-                    decrementBlock(myBlock);
-                    break;
-                }
+            // check for hit on the upper edge
+            if (myBall.getYDir() > 0 && ballMaxY >= blockMinY && ballMinY <= blockMinY && ((ballMaxX >= blockMinX) && (ballMaxX <= blockMaxX) || (ballMinX >= blockMinX && ballMinX <= blockMaxX))) {
+                myBall.changeYDir();
+                decrementBlock(myBlock);
+                break;
+            }
+            // check for hit on the lower edge
+            if (myBall.getYDir() < 0 && ballMinY <= blockMaxY && ballMaxY >= blockMaxY && ((ballMaxX >= blockMinX) && (ballMaxX <= blockMaxX) || (ballMinX >= blockMinX && ballMinX <= blockMaxX))) {
+                myBall.changeYDir();
+                decrementBlock(myBlock);
+                break;
+            }
+            // check for hit on the left edge
+            if (myBall.getXDir() > 0 && ballMaxX >= blockMinX && ballMinX <= blockMinX && ((ballMaxY >= blockMinY && ballMaxY <= blockMaxY) || (ballMinY >= blockMinY && ballMinY <= blockMaxY))) {
+                myBall.changeXDir();
+                decrementBlock(myBlock);
+                break;
+            }
+            // check for hit on the right edge
+            if (myBall.getXDir() < 0 && ballMinX <= blockMaxX && ballMaxX >= blockMaxX && ((ballMaxY >= blockMinY && ballMaxY <= blockMaxY) || (ballMinY >= blockMinY && ballMinY <= blockMaxY))) {
+                myBall.changeXDir();
+                decrementBlock(myBlock);
+                break;
             }
         }
     }
 
     /**
-//     * Check whether the ball collides with a power
-//     *
-//     * If so implement appropriate action
-//     */
+     * Check whether the ball collides with a power
+     *
+     * If so implement appropriate action
+     */
 //    private void collidesWithPower() {
 //        for (int i = 0; i < myPowers.size(); i++) {
 //            Power myPow = myPowers.get(i);
@@ -485,42 +481,32 @@ public class Main extends Application {
 //    }
 
     /**
-     * Decrease block lives and check whether the block is still alive
+     * Decrease block lives and change block image if block
+     * is still alive
      *
      * @param myBlock
      */
     private void decrementBlock(Block myBlock) {
+        myBlocks.remove(myBlock);
         myBlock.decrementLives();
-        // check if block is still alive
-        if(myBlock.getLives() == 1) {
-            removeBlock(myBlock);
-            myBlocks.add(myBlock.getBlockImage());
+        if(myBlock.getLives() >= 1) {
+            myBlocks.add(myBlock);
         }
         else {
             addToScore(myBlock.getRow());
-            removeBlock(myBlock);
         }
     }
 
     /**
-     * Remove block from screen and ArrayList
+     * remove images from screen and their corresponding list
      *
-     * @param myBlock
+     * @param im
+     * @param list
      */
-    private void removeBlock(Block myBlock) {
-        myBlock.getBlockImage().setImage(null);
-        myBlocks.remove(myBlock.getBlockImage());
+    private void removeImage(ImageView im, List list) {
+        im.setImage(null);
+        list.remove(im);
     }
-
-//    /**
-//     * Remove power from screen
-//     *
-//     * @param myPower
-//     */
-//    private void removePower(Power myPower) {
-//        myPower.getBlockImage().setImage(null);
-//        root.getChildren().remove(myPower.getBlockImage());
-//    }
 
     /**
      * Decrease player lives
@@ -567,12 +553,10 @@ public class Main extends Application {
     }
 
     /**
-     * Increase game level
-     *
-     * Reset position of ball and paddle and reset the map of blocks
-     * @param root
+     * increases game level and resets game, including
+     * position of ball, paddle, blocks, and powers
      */
-    private void levelUp(Group root) {
+    private void levelUp() {
         myLevel += 1;
         myLives += 1;
         myBall.reset();
@@ -581,13 +565,9 @@ public class Main extends Application {
         myBall.setSpeed(myBall.getSpeed() + 20);
         myPaddle.setSpeed(myPaddle.getSpeed() + 5);
 
-        myMap = new ArrayList<>();
         myBlocks = new ArrayList<>();
         myPowers = new ArrayList<>();
         MapGenerator(numRow + myLevel,numCol);
-
-        // Add shapes to collection
-        root.getChildren().addAll(myBlocks);
 
         updateStatus();
     }
@@ -617,19 +597,15 @@ public class Main extends Application {
         myPaddle.reset();
 
         // Get rid of old blocks
-        for (int i = 0; i < myMap.size(); i++) {
+        for (int i = 0; i < myBlocks.size(); i++) {
             if(!myBlocks.isEmpty()) {
-                Block myBlock = myMap.get(i);
-                removeBlock(myBlock);
+                Block myBlock = myBlocks.get(i);
+                removeImage(myBlock.getBlockImage(), myBlocks);
             }
         }
 
-        myMap = new ArrayList<>();
         myBlocks = new ArrayList<>();
         MapGenerator(numRow + myLevel, numCol);
-
-        // Add shapes to collection
-        root.getChildren().addAll(myBlocks);
 
         updateStatus();
     }
@@ -685,19 +661,20 @@ public class Main extends Application {
             play = false;
 
             // get rid of old blocks
-            for (int i = 0; i < myMap.size(); i++) {
+            for (int i = 0; i < myBlocks.size(); i++) {
                 if(!myBlocks.isEmpty()) {
-                    Block myBlock = myMap.get(i);
-                    removeBlock(myBlock);
+                    Block myBlock = myBlocks.get(i);
+                    removeImage(myBlock.getBlockImage(), myBlocks);
                 }
             }
-//
-//            // get rid of old powers
-//            for (int i = 0; i < myPowers.size(); i++) {
-//                removePower(myPowers.get(i));
-//            }
 
-            levelUp(root);
+            // get rid of old powers
+            for (int i = 0; i < myPowers.size(); i++) {
+                Power myPow = myPowers.get(i);
+                removeImage(myPow.getPowerImage(), myPowers);
+            }
+
+            levelUp();
         }
 
         // Space - Pause or Resume Game
