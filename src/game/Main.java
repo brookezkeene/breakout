@@ -509,6 +509,28 @@ public class Main extends Application {
     }
 
     /**
+     * iterates through array of blocks to remove images
+     */
+    private void removeBlocks() {
+        for (int i = 0; i < myBlocks.size(); i++) {
+            if(!myBlocks.isEmpty()) {
+                Block myBlock = myBlocks.get(i);
+                removeImage(myBlock.getBlockImage(), myBlocks);
+            }
+        }
+    }
+
+    /**
+     * iterates through array of powers to remove images
+     */
+    private void removePowers() {
+        for (int i = 0; i < myPowers.size(); i++) {
+            Power myPow = myPowers.get(i);
+            removeImage(myPow.getPowerImage(), myPowers);
+        }
+    }
+
+    /**
      * Decrease player lives
      *
      * If player lost, stop game and print message
@@ -596,13 +618,8 @@ public class Main extends Application {
         myPaddle.setSpeed(10);
         myPaddle.reset();
 
-        // Get rid of old blocks
-        for (int i = 0; i < myBlocks.size(); i++) {
-            if(!myBlocks.isEmpty()) {
-                Block myBlock = myBlocks.get(i);
-                removeImage(myBlock.getBlockImage(), myBlocks);
-            }
-        }
+        removeBlocks();
+        removePowers();
 
         myBlocks = new ArrayList<>();
         MapGenerator(numRow + myLevel, numCol);
@@ -643,12 +660,29 @@ public class Main extends Application {
         }
 
         // Cheat Keys
-        // R - Reset **Needs Work
+        // Space - Pause or Resume Game
+        if(code == KeyCode.SPACE) {
+            play = !play;
+        }
+
+        // R - Reset
         if (code == KeyCode.R) {
             play = false;
 
             resetGame();
         }
+
+        // N - Next Level
+        //TODO: Previous Level ??? (S & D controls)
+        if(code == KeyCode.N) {
+            play = false;
+
+            removeBlocks();
+            removePowers();
+
+            levelUp();
+        }
+
 
         // L - Extra Life
         if(code == KeyCode.L) {
@@ -656,30 +690,14 @@ public class Main extends Application {
             updateStatus();
         }
 
-        // S - Skip Level
-        if(code == KeyCode.S) {
-            play = false;
-
-            // get rid of old blocks
-            for (int i = 0; i < myBlocks.size(); i++) {
-                if(!myBlocks.isEmpty()) {
-                    Block myBlock = myBlocks.get(i);
-                    removeImage(myBlock.getBlockImage(), myBlocks);
-                }
+        // P - Reveal Power Ups
+        if(code == KeyCode.P) {
+            ArrayList<Power> mytempPow = myPowers;
+            removePowers();
+            myPowers = mytempPow;
+            for(int i = 0; i < myPowers.size(); i++) {
+                root.getChildren().add(myPowers.get(i).getPowerImage());
             }
-
-            // get rid of old powers
-            for (int i = 0; i < myPowers.size(); i++) {
-                Power myPow = myPowers.get(i);
-                removeImage(myPow.getPowerImage(), myPowers);
-            }
-
-            levelUp();
-        }
-
-        // Space - Pause or Resume Game
-        if(code == KeyCode.SPACE) {
-            play = !play;
         }
     }
 
